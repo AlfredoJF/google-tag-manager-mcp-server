@@ -18,7 +18,7 @@ Replace the content with the following configuration. Once you restart Claude De
       "args": [
         "-y",
         "mcp-remote",
-        "https://gtm-mcp.stape.ai/sse"
+        "https://gtm-mcp.stape.ai/mcp"
       ]
     }
   }

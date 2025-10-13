@@ -20,15 +20,18 @@ export class GoogleTagManagerMCPServer extends McpAgent<
 
   async init() {
     tools.forEach((register) => {
+      // @ts-ignore
       register(this.server, { props: this.props, env: this.env });
     });
   }
 }
 
 export default new OAuthProvider({
-  apiRoute: "/sse",
-  // @ts-ignore
-  apiHandler: GoogleTagManagerMCPServer.mount("/sse"),
+  apiRoute: ["/sse", "/mcp"],
+  apiHandlers: {
+    "/sse": GoogleTagManagerMCPServer.serveSSE("/sse"),
+    "/mcp": GoogleTagManagerMCPServer.serve("/mcp"),
+  },
   // @ts-ignore
   defaultHandler: apisHandler,
   authorizeEndpoint: "/authorize",
