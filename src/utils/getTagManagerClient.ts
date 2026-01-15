@@ -1,16 +1,28 @@
 import { google } from "googleapis";
 import { log } from "./log";
+import { Props } from "./authorizeUtils";
 
 type TagManagerClient = ReturnType<typeof google.tagmanager>;
 
 export async function getTagManagerClient(
-  accessToken: string,
+  props: Props,
 ): Promise<TagManagerClient> {
+  const token = props.accessToken;
+
+  if (props.expiresAt) {
+    const now = Math.floor(Date.now() / 1000);
+    if (now >= props.expiresAt) {
+      throw new Error(
+        "Access token expired. Please refresh your connection or re-authenticate.",
+      );
+    }
+  }
+
   try {
     return google.tagmanager({
       version: "v2",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     });
   } catch (error) {

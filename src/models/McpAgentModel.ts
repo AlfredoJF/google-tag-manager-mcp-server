@@ -3,6 +3,8 @@ export type McpAgentPropsModel = {
   name: string;
   email: string;
   accessToken: string;
+  refreshToken?: string;
+  expiresAt?: number;
   clientId: string;
 };
 

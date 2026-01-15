@@ -94,7 +94,7 @@ export const transformationActions = (
       log(`Running tool: gtm_transformation with action ${action}`);
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "create": {

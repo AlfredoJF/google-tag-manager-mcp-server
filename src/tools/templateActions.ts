@@ -94,7 +94,7 @@ export const templateActions = (
       log(`Running tool: gtm_template with action ${action}`);
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "create": {
