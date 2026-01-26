@@ -114,7 +114,7 @@ export const containerActions = (
       log(`Running tool: gtm_container with action ${action}`);
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "create": {

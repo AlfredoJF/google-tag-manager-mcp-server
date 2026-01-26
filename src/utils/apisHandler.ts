@@ -84,11 +84,12 @@ async function redirectToGoogle(
       ...headers,
       location: getUpstreamAuthorizeUrl({
         upstreamUrl: "https://accounts.google.com/o/oauth2/v2/auth",
-        scope: scopes.join("  "),
+        scope: scopes.join(" "),
         clientId: c.env.GOOGLE_CLIENT_ID,
         redirectUri: new URL("/callback", c.req.raw.url).href,
         state: btoa(JSON.stringify(oauthReqInfo)),
         hostedDomain: c.env.HOSTED_DOMAIN,
+        hasRefreshToken: false,
       }),
     },
   });
@@ -110,8 +111,8 @@ app.get("/callback", async (c) => {
     return c.text("Missing code", 400);
   }
 
-  const [accessToken, googleErrResponse] = await fetchUpstreamAuthToken({
-    upstreamUrl: "https://accounts.google.com/o/oauth2/token",
+  const [tokenResult, googleErrResponse] = await fetchUpstreamAuthToken({
+    upstreamUrl: "https://oauth2.googleapis.com/token",
     clientId: c.env.GOOGLE_CLIENT_ID,
     clientSecret: c.env.GOOGLE_CLIENT_SECRET,
     code,
@@ -127,7 +128,7 @@ app.get("/callback", async (c) => {
     "https://www.googleapis.com/oauth2/v2/userinfo",
     {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${tokenResult?.access_token}`,
       },
     },
   );
@@ -155,10 +156,13 @@ app.get("/callback", async (c) => {
     props: {
       name,
       email,
-      accessToken,
+      accessToken: tokenResult.access_token,
+      refreshToken: tokenResult.refresh_token,
+      expiresAt:
+        Math.floor(Date.now() / 1000) + (tokenResult.expires_in ?? 3600),
       clientId: oauthReqInfo.clientId,
       userId: id,
-    } as Props,
+    } satisfies Props,
   });
 
   return Response.redirect(redirectTo);

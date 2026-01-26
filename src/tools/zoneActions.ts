@@ -87,13 +87,12 @@ export const zoneActions = (
       itemsPerPage,
     }): Promise<CallToolResult> => {
       log(
-        `Running tool: gtm_zone for action '${action}' on account ${accountId}, container ${containerId}, workspace ${workspaceId}${
-          zoneId ? `, zone ${zoneId}` : ""
+        `Running tool: gtm_zone for action '${action}' on account ${accountId}, container ${containerId}, workspace ${workspaceId}${zoneId ? `, zone ${zoneId}` : ""
         }`,
       );
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "create": {
@@ -237,8 +236,7 @@ export const zoneActions = (
         }
       } catch (error) {
         return createErrorResponse(
-          `Error performing ${action} action on zone${
-            zoneId ? ` ${zoneId}` : ""
+          `Error performing ${action} action on zone${zoneId ? ` ${zoneId}` : ""
           } in workspace ${workspaceId} for container ${containerId} in account ${accountId}`,
           error,
         );

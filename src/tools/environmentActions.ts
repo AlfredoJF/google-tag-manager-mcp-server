@@ -86,7 +86,7 @@ export const environmentActions = (
     }) => {
       log(`Running tool: gtm_environment with action ${action}`);
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
         switch (action) {
           case "create": {
             if (!createOrUpdateConfig) {

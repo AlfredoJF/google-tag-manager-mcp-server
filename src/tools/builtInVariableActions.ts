@@ -85,7 +85,7 @@ export const builtInVariableActions = (
       log(`Running tool: gtm_built_in_variable with action ${action}`);
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "create": {

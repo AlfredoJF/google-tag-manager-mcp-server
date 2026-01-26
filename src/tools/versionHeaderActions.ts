@@ -62,7 +62,7 @@ export const versionHeaderActions = (
       log(`Running tool: gtm_version_header with action ${action}`);
 
       try {
-        const tagmanager = await getTagManagerClient(props.accessToken);
+        const tagmanager = await getTagManagerClient(props);
 
         switch (action) {
           case "list": {
