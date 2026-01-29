@@ -3,8 +3,8 @@
   "version": "3.0.5",
   "description": "MCP server for Google Tag Manager",
   "license": "Apache-2.0",
-  "author": "stape-io",
-  "homepage": "https://github.com/stape-io/google-tag-manager-mcp-server",
+  "author": "AlfredoJF",
+  "homepage": "https://github.com/AlfredoJF/google-tag-manager-mcp-server",
   "main": "dist/index.js",
   "bin": {
     "google-tag-manager-mcp-server": "./dist/index.js"

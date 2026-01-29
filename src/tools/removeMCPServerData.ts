@@ -9,8 +9,24 @@ export const removeMCPServerData = (
 ): void => {
   server.tool(
     TAG_MANAGER_REMOVE_MCP_SERVER_DATA,
-    "Clear client data from MCP server and revoke google auth access",
+    "Clear client data from MCP server and revoke google auth access (SSE/OAuth mode only)",
     async () => {
+      // This tool is SSE/OAuth mode only - it requires the Workers backend
+      if (!env?.WORKER_HOST) {
+        return createErrorResponse(
+          "This tool is only available for SSE/OAuth mode with Workers backend, not for local ADC mode.",
+          "Invalid mode",
+        );
+      }
+
+      // userId is required for the /remove endpoint (present in SSE/OAuth mode)
+      if (!props.userId) {
+        return createErrorResponse(
+          "This tool requires OAuth authentication.",
+          "Invalid credentials",
+        );
+      }
+
       const url = new URL("remove", env.WORKER_HOST);
 
       url.searchParams.append("clientId", props.clientId);
