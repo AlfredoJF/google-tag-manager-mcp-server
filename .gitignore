@@ -183,3 +183,5 @@ dist
 
 .dev.vars
 .wrangler/
+
+.claude
