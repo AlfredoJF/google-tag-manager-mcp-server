@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ConditionSchema } from "./ConditionSchema.js";
-import { ParameterSchema } from "./ParameterSchema.js";
+import { ConditionSchema } from "./ConditionSchema";
+import { ParameterSchema } from "./ParameterSchema";
 
 export const TriggerSchema = z.object({
   accountId: z.string().describe("GTM Account ID."),

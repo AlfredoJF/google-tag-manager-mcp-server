@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ParameterSchema } from "./ParameterSchema.js";
+import { ParameterSchema } from "./ParameterSchema";
 
 export const CaseConversionTypeEnum = z.enum([
   "none",

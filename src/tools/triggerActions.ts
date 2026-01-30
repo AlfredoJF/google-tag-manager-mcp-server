@@ -1,22 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
-import { createTriggerInputSchema } from "../schemas/InputSchema.js";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel";
+import { TriggerSchema } from "../schemas/TriggerSchema";
 import {
   createErrorResponse,
   getTagManagerClient,
   log,
   paginateArray,
-} from "../utils/index.js";
+} from "../utils";
 import Schema$Trigger = tagmanager_v2.Schema$Trigger;
 
-/**
- * Input schema for tool parameters (non-recursive to avoid ADK RecursionError).
- * The full TriggerSchema is still used for runtime/API validation.
- * See: src/schemas/InputSchema.ts for details on the RecursionError fix.
- */
-const PayloadSchema = createTriggerInputSchema();
+const PayloadSchema = TriggerSchema.omit({
+  accountId: true,
+  containerId: true,
+  workspaceId: true,
+  triggerId: true,
+  fingerprint: true,
+});
 
 const ITEMS_PER_PAGE = 20;
 

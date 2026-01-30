@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ParameterSchema } from "./ParameterSchema.js";
+import { ParameterSchema } from "./ParameterSchema";
 
 export const TransformationSchema = z.object({
   accountId: z.string().describe("GTM Account ID."),

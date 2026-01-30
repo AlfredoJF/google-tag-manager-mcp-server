@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ParameterSchema } from "./ParameterSchema.js";
+import { ParameterSchema } from "./ParameterSchema";
 
 /**
  * Tag resource schema fields (all fields, including IDs and metadata)

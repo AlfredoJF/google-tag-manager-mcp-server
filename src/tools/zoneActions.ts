@@ -2,22 +2,23 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
-import { createZoneInputSchema } from "../schemas/InputSchema.js";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel";
+import { ZoneSchema } from "../schemas/ZoneSchema";
 import {
   createErrorResponse,
   getTagManagerClient,
   log,
   paginateArray,
-} from "../utils/index.js";
+} from "../utils";
 import Schema$Zone = tagmanager_v2.Schema$Zone;
 
-/**
- * Input schema for tool parameters (non-recursive to avoid ADK RecursionError).
- * The full ZoneSchema is still used for runtime/API validation.
- * See: src/schemas/InputSchema.ts for details on the RecursionError fix.
- */
-const PayloadSchema = createZoneInputSchema();
+const PayloadSchema = ZoneSchema.omit({
+  accountId: true,
+  containerId: true,
+  workspaceId: true,
+  zoneId: true,
+  fingerprint: true,
+});
 
 const ITEMS_PER_PAGE = 20;
 

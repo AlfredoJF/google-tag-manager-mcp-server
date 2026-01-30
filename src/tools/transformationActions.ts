@@ -1,22 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
-import { createTransformationInputSchema } from "../schemas/InputSchema.js";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel";
+import { TransformationSchema } from "../schemas/TransformationSchema";
 import {
   createErrorResponse,
   getTagManagerClient,
   log,
   paginateArray,
-} from "../utils/index.js";
+} from "../utils";
 import Schema$Transformation = tagmanager_v2.Schema$Transformation;
 
-/**
- * Input schema for tool parameters (non-recursive to avoid ADK RecursionError).
- * The full TransformationSchema is still used for runtime/API validation.
- * See: src/schemas/InputSchema.ts for details on the RecursionError fix.
- */
-const PayloadSchema = createTransformationInputSchema();
+const PayloadSchema = TransformationSchema.omit({
+  accountId: true,
+  containerId: true,
+  workspaceId: true,
+  transformationId: true,
+  fingerprint: true,
+});
 
 const ITEMS_PER_PAGE = 50;
 

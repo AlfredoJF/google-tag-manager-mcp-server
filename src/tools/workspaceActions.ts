@@ -2,30 +2,38 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
-import { WorkspaceSchema } from "../schemas/WorkspaceSchema.js";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel";
+import { BuiltInVariableSchema } from "../schemas/BuiltInVariableSchema";
+import { CustomTemplateSchema } from "../schemas/CustomTemplateSchema";
+import { FolderSchema } from "../schemas/FolderSchema";
+import { GtagConfigSchema } from "../schemas/GtagConfigSchema";
+import { TagSchema } from "../schemas/TagSchema";
+import { TransformationSchema } from "../schemas/TransformationSchema";
+import { TriggerSchema } from "../schemas/TriggerSchema";
+import { VariableSchema } from "../schemas/VariableSchema";
+import { WorkspaceSchema } from "../schemas/WorkspaceSchema";
+import { ZoneSchema } from "../schemas/ZoneSchema";
 import {
   createErrorResponse,
   getTagManagerClient,
   log,
   paginateArray,
-} from "../utils/index.js";
+} from "../utils";
 import Schema$Entity = tagmanager_v2.Schema$Entity;
 import Schema$Workspace = tagmanager_v2.Schema$Workspace;
 
-/**
- * Simplified Entity schema for tool input to avoid circular references.
- * The full EntitySchema uses z.union() with schemas that have circular
- * references through ParameterSchema, causing RecursionError in ADK.
- *
- * For resolveConflict, the entity is passed as a JSON object string
- * and parsed before sending to the API.
- */
-const EntitySchema = z
-  .string()
-  .describe(
-    "The entity object for resolveConflict action (JSON string). Can be tag, trigger, variable, folder, client, transformation, zone, customTemplate, builtInVariable, or gtagConfig.",
-  );
+const EntitySchema = z.union([
+  z.object({ tag: TagSchema }),
+  z.object({ trigger: TriggerSchema }),
+  z.object({ variable: VariableSchema }),
+  z.object({ folder: FolderSchema }),
+  z.object({ client: TransformationSchema }),
+  z.object({ transformation: TransformationSchema }),
+  z.object({ zone: ZoneSchema }),
+  z.object({ customTemplate: CustomTemplateSchema }),
+  z.object({ builtInVariable: BuiltInVariableSchema }),
+  z.object({ gtagConfig: GtagConfigSchema }),
+]);
 
 const PayloadSchema = WorkspaceSchema.omit({
   accountId: true,
@@ -333,16 +341,15 @@ export const workspaceActions = (
               throw new Error(`changeStatus is required for ${action} action`);
             }
 
-            // Parse entity from JSON string
-            const parsedEntity = JSON.parse(entity);
-            const entityName = Object.keys(parsedEntity);
+            const entityName = Object.keys(entity);
 
             await tagmanager.accounts.containers.workspaces.resolve_conflict({
               path: `accounts/${accountId}/containers/${containerId}/workspaces/${workspaceId}`,
               fingerprint,
               requestBody: {
                 changeStatus,
-                [entityName[0]]: parsedEntity[entityName[0]],
+                // @ts-expect-error
+                [entityName[0]]: entity[entityName[0]],
               } as Schema$Entity,
             });
 
