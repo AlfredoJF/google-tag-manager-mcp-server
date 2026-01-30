@@ -5,7 +5,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "google-tag-manager-mcp-server",
-  "main": "src/index.ts",
+  "main": "src/worker.ts",
   "compatibility_date": "2025-03-10",
   "compatibility_flags": [
     "nodejs_compat"

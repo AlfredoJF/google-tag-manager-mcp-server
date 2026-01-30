@@ -1,8 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel";
-import { ContainerVersionSchema } from "../schemas/ContainerVersionSchema";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
 import {
   createErrorResponse,
   getTagManagerClient,
@@ -10,14 +9,21 @@ import {
   log,
   processVersionData,
   ResourceType,
-} from "../utils";
+} from "../utils/index.js";
 import Schema$ContainerVersion = tagmanager_v2.Schema$ContainerVersion;
 
-const PayloadSchema = ContainerVersionSchema.omit({
-  accountId: true,
-  containerId: true,
-  containerVersionId: true,
-});
+/**
+ * Simplified payload schema to avoid circular references.
+ * ContainerVersionSchema contains arrays of TagSchema, TriggerSchema, etc.
+ * which all have circular references through ParameterSchema.
+ *
+ * The config is passed as a JSON string and parsed before sending to the API.
+ */
+const PayloadSchema = z
+  .string()
+  .describe(
+    "Configuration for 'update' action as a JSON string. Corresponds to the GTM container version resource.",
+  );
 
 export const versionActions = (
   server: McpServer,
@@ -265,11 +271,14 @@ export const versionActions = (
               throw new Error(`fingerprint is required for ${action} action`);
             }
 
+            // Parse config from JSON string
+            const parsedConfig = JSON.parse(createOrUpdateConfig);
+
             const response =
               await tagmanager.accounts.containers.versions.update({
                 path: `accounts/${accountId}/containers/${containerId}/versions/${containerVersionId}`,
                 fingerprint,
-                requestBody: createOrUpdateConfig as Schema$ContainerVersion,
+                requestBody: parsedConfig as Schema$ContainerVersion,
               });
 
             return {

@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import { GoogleAuth } from "google-auth-library";
-import { log } from "./log";
+import { log } from "./log.js";
 
 const GTM_SCOPES = ["https://www.googleapis.com/auth/tagmanager.edit.container"];
 

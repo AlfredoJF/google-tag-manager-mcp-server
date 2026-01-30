@@ -7,15 +7,15 @@ import {
   fetchUpstreamAuthToken,
   getUpstreamAuthorizeUrl,
   Props,
-} from "./authorizeUtils";
-import { renderMainPage } from "./renderMainPage";
-import { renderPrivacyPage } from "./renderPrivacyPage";
-import { renderTermsPage } from "./renderTermsPage";
+} from "./authorizeUtils.js";
+import { renderMainPage } from "./renderMainPage.js";
+import { renderPrivacyPage } from "./renderPrivacyPage.js";
+import { renderTermsPage } from "./renderTermsPage.js";
 import {
   clientIdAlreadyApproved,
   parseRedirectApproval,
   renderApprovalDialog,
-} from "./workersOAuthUtils";
+} from "./workersOAuthUtils.js";
 
 const app = new Hono<{ Bindings: Env & { OAUTH_PROVIDER: OAuthHelpers } }>();
 

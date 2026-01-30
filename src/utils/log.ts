@@ -1,4 +1,5 @@
 // Helper function for logging that respects NO_COLOR
+// Note: Uses console.error to avoid interfering with MCP stdio protocol
 export function log(message: string, ...rest: unknown[]): void {
   // Remove emoji and color codes if NO_COLOR is set
   if (!process.env.NO_COLOR) {
@@ -9,5 +10,5 @@ export function log(message: string, ...rest: unknown[]): void {
       .replace(/ℹ️/g, "INFO:")
       .replace(/\u2139\ufe0f/g, "INFO:");
   }
-  console.log(message, ...rest);
+  console.error(message, ...rest);
 }

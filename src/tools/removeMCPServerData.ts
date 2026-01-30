@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { TAG_MANAGER_REMOVE_MCP_SERVER_DATA } from "../constants/tools";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel";
-import { createErrorResponse } from "../utils";
+import { TAG_MANAGER_REMOVE_MCP_SERVER_DATA } from "../constants/tools.js";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
+import { createErrorResponse } from "../utils/index.js";
 
 export const removeMCPServerData = (
   server: McpServer,

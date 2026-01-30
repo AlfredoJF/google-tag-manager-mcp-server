@@ -1,8 +1,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel";
-import { AccountSchema } from "../schemas/AccountSchema";
-import { createErrorResponse, getTagManagerClient, log } from "../utils";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
+import { AccountSchema } from "../schemas/AccountSchema.js";
+import { createErrorResponse, getTagManagerClient, log } from "../utils/index.js";
 
 const PayloadSchema = AccountSchema.omit({
   accountId: true,
@@ -21,7 +21,7 @@ export const accountActions = (
         .describe(
           "The account operation to perform. Must be one of: 'get', 'list', 'update'.",
         ),
-      accountId: z.string().describe("The unique ID of the GTM Account."),
+      accountId: z.string().optional().describe("The unique ID of the GTM Account. Required for 'get' and 'update' actions, not used for 'list'."),
       config: PayloadSchema.optional().describe(
         "Configuration for 'update' action. All fields correspond to the GTM Account resource.",
       ),
