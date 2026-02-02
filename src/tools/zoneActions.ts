@@ -2,14 +2,14 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { tagmanager_v2 } from "googleapis";
 import { z } from "zod";
-import { McpAgentToolParamsModel } from "../models/McpAgentModel";
-import { ZoneSchema } from "../schemas/ZoneSchema";
+import { McpAgentToolParamsModel } from "../models/McpAgentModel.js";
+import { ZoneSchema } from "../schemas/ZoneSchema.js";
 import {
   createErrorResponse,
   getTagManagerClient,
   log,
   paginateArray,
-} from "../utils";
+} from "../utils/index.js";
 import Schema$Zone = tagmanager_v2.Schema$Zone;
 
 const PayloadSchema = ZoneSchema.omit({
