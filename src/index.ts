@@ -1,39 +1,52 @@
+import { OAuthProvider } from "@cloudflare/workers-oauth-provider";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { McpAgentPropsModel, McpAgentToolParamsModel } from "./models/McpAgentModel.js";
+import { McpAgent } from "agents/mcp";
+import { McpAgentPropsModel } from "./models/McpAgentModel.js";
 import { tools } from "./tools/index.js";
-import { createServer } from "./common.js";
-import { authenticateWithADC } from "./utils/adcAuth.js";
+import {
+  apisHandler,
+  getPackageVersion,
+  handleTokenExchangeCallback,
+} from "./utils/index.js";
 
-// ============================================================
-// STDIO MODE ONLY (for local development with ADC)
-// ============================================================
-(async () => {
-  const server = createServer();
-  const adcResult = await authenticateWithADC();
-
-  if (!adcResult.credentials) {
-    throw new Error("ADC credentials file not found. Please set CUSTOM_ADC_PATH, GOOGLE_APPLICATION_CREDENTIALS, or run 'gcloud auth application-default login'.");
-  }
-
-  // Build props from authorized_user ADC credentials
-  const props: McpAgentPropsModel = {
-    userId: undefined,      // Not in ADC, would need userinfo call
-    name: undefined,        // Not in ADC, would need userinfo call
-    email: undefined,       // Not in ADC, would need userinfo call
-    accessToken: adcResult.accessToken,
-    refreshToken: adcResult.credentials.refresh_token,
-    expiresAt: undefined,   // GoogleAuth handles token lifecycle
-    clientId: adcResult.credentials.client_id,
-  };
-
-  tools.forEach((register) => {
-    register(server, { props, env: undefined } as unknown as McpAgentToolParamsModel);
+export class GoogleTagManagerMCPServer extends McpAgent<
+  Env,
+  null,
+  McpAgentPropsModel
+> {
+  server = new McpServer({
+    name: "google-tag-manager-mcp-server",
+    version: getPackageVersion(),
+    protocolVersion: "1.0",
+    vendor: "stape-io",
+    homepage: "https://github.com/stape-io/google-tag-manager-mcp-server",
   });
 
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-})().catch((error) => {
-  console.error("Fatal error starting server:", error);
-  process.exit(1);
-});
+  async init() {
+    tools.forEach((register) => {
+      // @ts-ignore
+      register(this.server, { props: this.props, env: this.env });
+    });
+  }
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    const provider = new OAuthProvider({
+      apiRoute: ["/sse", "/mcp"],
+      apiHandlers: {
+        "/sse": GoogleTagManagerMCPServer.serveSSE("/sse"),
+        "/mcp": GoogleTagManagerMCPServer.serve("/mcp"),
+      },
+      // @ts-ignore
+      defaultHandler: apisHandler,
+      authorizeEndpoint: "/authorize",
+      tokenEndpoint: "/token",
+      clientRegistrationEndpoint: "/register",
+      tokenExchangeCallback: async (options) => {
+        return handleTokenExchangeCallback(options, env);
+      },
+    });
+    return provider.fetch(request, env, ctx);
+  },
+};

@@ -17,7 +17,7 @@
     "stape"
   ],
   "scripts": {
-    "build": "tsc && echo '#!/usr/bin/env node' | cat - dist/index.js > dist/index.js.tmp && mv dist/index.js.tmp dist/index.js && chmod +x dist/index.js",
+    "build": "tsc && chmod 755 dist/index.js dist/stdio.js",
     "postinstall": "npm run build",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix",
